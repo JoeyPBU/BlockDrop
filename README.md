@@ -4,14 +4,14 @@ DropBlock is an all Python game using **Pygame**, inspired by the classic Tetris
 
 ---
 ## Controls
-| Action           | Key         |
-|------------------|-------------|
-| Move Left        | Left Arrow  |
-| Move Right       | Right Arrow |
-| Drop             | Down Arrow  |
-| Rotate           | Up Arrow    |
-| Pause / Unpause  | Space       |
-| Restart Game     | R           |
+| Action           | Key         | Controller                |
+|------------------|-------------|---------------------------|
+| Move Left        | Left Arrow  | DPad or Joystick Left     |
+| Move Right       | Right Arrow | DPad or Joystick Right    |
+| Drop             | Down Arrow  | Dpad Down                 |
+| Rotate           | Up Arrow    | X, A, B (Buttons 0, 1, 3) |
+| Pause / Unpause  | Space       | + (Button 7)              |
+| Restart Game     | R           | - (Button 6)              |
 
 ---
 
