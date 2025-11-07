@@ -2,6 +2,7 @@ import pygame
 import sys
 from game import Game
 from colours import Colours
+from controls import Controls
 
 pygame.init()
 
@@ -24,92 +25,70 @@ pygame.display.set_caption("Drop Block!")
 clock = pygame.time.Clock()
 
 # --- Game setup ---
+controls = Controls()
 game = Game()
+
+# --- Setup game drop timer ---
 GAME_UPDATE = pygame.USEREVENT
-game_speed = max(100, 350 - (25 * game.level))
-pygame.time.set_timer(GAME_UPDATE, game_speed)
-paused = False
-MOVE_DELAY = 120
-last_move_time = {"left": 0, "right": 0, "down": 0}
+pygame.time.set_timer(GAME_UPDATE, game.get_drop_speed()) 
 
-# --- Main loop ---
 while True:
-    # --- Fall Speed based on Level ---
-    new_speed = max(100, 350 - (25 * game.level))
-    if new_speed != game_speed:
-        game_speed = new_speed
-        pygame.time.set_timer(GAME_UPDATE, game_speed)
+    events = pygame.event.get()
 
-    current_time = pygame.time.get_ticks()
+    actions = controls.get_actions(events)
 
-    # --- Event handling ---
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    if actions["quit"]:
+        pygame.quit()
+        sys.exit()
 
-        # --- Game over logic ---
-        if game.game_over:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                game.reset()
-                paused = False
-            continue
+    # Handle pause / reset
+    if actions["pause_toggle"]:
+        game.paused = not game.paused
+    if actions["reset"]:
+        game.reset()
+        pygame.time.set_timer(GAME_UPDATE, game.get_drop_speed())
 
-        # --- Gameplay controls ---
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                paused = not paused
-            elif event.key == pygame.K_r:
-                game.reset()
-            elif event.key == pygame.K_UP and not paused:
-                game.rotate()
-        
-        # --- Passive Drop Blocks ---
-        if event.type == GAME_UPDATE and not paused:
-            game.move_down()
-
-    # --- Gameplay controls - Hold Movement ---
-    if not paused and not game.game_over:
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_LEFT] and current_time - last_move_time["left"] > MOVE_DELAY:
+    # Only move blocks if not paused or game over
+    if not game.paused and not game.game_over:
+        if actions["move_left"]:
             game.move_left()
-            last_move_time["left"] = current_time
-
-        if keys[pygame.K_RIGHT] and current_time - last_move_time["right"] > MOVE_DELAY:
+        if actions["move_right"]:
             game.move_right()
-            last_move_time["right"] = current_time
-
-        if keys[pygame.K_DOWN] and current_time - last_move_time["down"] > MOVE_DELAY:
+        if actions["move_down"]:
             game.move_down()
-            last_move_time["down"] = current_time
+        if actions["rotate"]:
+            game.rotate()
 
-
+    for event in events:
+        if event.type == GAME_UPDATE and not game.paused and not game.game_over:
+            game.move_down()
+            pygame.time.set_timer(GAME_UPDATE, game.get_drop_speed())
+    
     # --- Drawing ---
     screen.fill(Colours.board_colour)
 
-    # --- Score box ---
+    # Score
     pygame.draw.rect(screen, Colours.board_colour_light, score_rect, 0, 10)
     screen.blit(score_surface, (365, 20))
     score_value_surface = game_font.render(str(game.score), True, Colours.text_white)
     screen.blit(score_value_surface, score_value_surface.get_rect(center=score_rect.center))
 
-    # --- Level box ---
+    # Level
     pygame.draw.rect(screen, Colours.board_colour_light, level_rect, 0, 10)
     screen.blit(level_surface, (365, 140))
     level_value_surface = game_font.render(str(game.level), True, Colours.text_white)
     screen.blit(level_value_surface, level_value_surface.get_rect(center=level_rect.center))
 
-    # --- Lines box ---
+    # Lines
     pygame.draw.rect(screen, Colours.board_colour_light, lines_rect, 0, 10)
     screen.blit(lines_surface, (365, 260))
     lines_value_surface = game_font.render(str(game.total_lines_cleared), True, Colours.text_white)
     screen.blit(lines_value_surface, lines_value_surface.get_rect(center=lines_rect.center))
 
-    # --- Next box ---
+    # Next
     pygame.draw.rect(screen, Colours.board_colour_light, next_rect, 0, 10)
 
-    # --- Game board ---
+    # Game board
     game.draw(screen)
 
     # --- Game over overlay ---

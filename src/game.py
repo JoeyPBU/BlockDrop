@@ -26,6 +26,7 @@ class Game:
         self.clear_line_sound = pygame.mixer.Sound(resource_path("sounds\\clear.mp3"))
         self.level = 0
         self.total_lines_cleared = 0
+        self.paused = False
 
     def update_score(self, lines_cleared):
         """
@@ -43,6 +44,16 @@ class Game:
                 self.score += 300 * (self.level + 1)
             case 4:
                 self.score += 1200 * (self.level + 1)
+
+    def get_drop_speed(self):
+        """
+        Returns the drop interval (milliseconds) based on the current level.
+        Higher levels = faster drops.
+        """
+        MAXIMUM_SPEED = 100
+        BASE_SPEED = 350
+        SPEED_INCREMENT = 25
+        return max(MAXIMUM_SPEED, BASE_SPEED - (SPEED_INCREMENT * self.level))
 
     def increase_total_lines_cleared(self, lines_cleared):
         """
@@ -150,7 +161,7 @@ class Game:
     def block_fits(self):
         """
         Check if the current block fits within empty grid spaces.
-        
+
         Returns:
             bool: True if block does not overlap other blocks, else False
         """
@@ -172,6 +183,8 @@ class Game:
         self.blocks = [IPiece(), JPiece(), LPiece(), OPiece(), SPiece(), ZPiece(), TPiece()]
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
+        self.paused = False
+        self.game_over = False
 
 
     def draw(self, screen):
