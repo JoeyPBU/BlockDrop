@@ -22,8 +22,8 @@ class Game:
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
-        self.place_block_sound = pygame.mixer.Sound(resource_path("sounds\\thump.mp3"))
-        self.clear_line_sound = pygame.mixer.Sound(resource_path("sounds\\clear.mp3"))
+        self.place_block_sound = pygame.mixer.Sound(resource_path("sounds/thump.mp3"))
+        self.clear_line_sound = pygame.mixer.Sound(resource_path("sounds/clear.mp3"))
         self.level = 0
         self.total_lines_cleared = 0
         self.paused = False
