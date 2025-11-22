@@ -17,7 +17,7 @@ DropBlock is an all Python game using **Pygame**, inspired by the classic Tetris
 
 ## Launching the game  
   
-Inside the dist folder, launch `DropBlock.exe`  
+Inside the dist folder, to Launch on Linux: `DropBlock` and on Windows: `DropBlock.exe`  
 If you wish to run the game via python, ensure you have Pygame and run via `src/DropBlock.py`
 
 ---
